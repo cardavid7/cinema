@@ -1,0 +1,16 @@
+
+from sqlmodel import SQLModel, Field
+from enum import Enum
+
+class MovieFormat(str, Enum):
+    TWO_D = "2D"
+    TWO_D_SUB = "2D_SUB"
+    THREE_D = "3D"
+    THREE_D_SUB = "3D_SUB"
+
+class Movie(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    title: str = Field(index=True, nullable=False)
+    description: str = Field(nullable=False)
+    duration: int = Field(nullable=False)
+    format: MovieFormat = Field(nullable=False)
