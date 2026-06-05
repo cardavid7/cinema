@@ -25,9 +25,9 @@ def seed_rooms():
             if not existing_room:
                 room = Room(name=r_data["name"], capacity=r_data["capacity"])
                 session.add(room)
-                print(f"-> Creating room: {r_data['name']} (Capacity: {r_data['capacity']})")
+                print(f"-----> Creating room: {r_data['name']} (Capacity: {r_data['capacity']})")
             else:
-                print(f"-> Room '{r_data['name']}' already exists. Skipping.")
+                print(f"-----> Room '{r_data['name']}' already exists. Skipping.")
                 
         session.commit()
     print("Seed of Room completed successfully!")

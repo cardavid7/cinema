@@ -1,6 +1,7 @@
 
 from sqlmodel import SQLModel, Field
 from enum import Enum
+from typing import Optional
 
 class MovieFormat(str, Enum):
     TWO_D = "2D"
@@ -9,8 +10,8 @@ class MovieFormat(str, Enum):
     THREE_D_SUB = "3D_SUB"
 
 class Movie(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     title: str = Field(index=True, nullable=False)
     description: str = Field(nullable=False)
     duration: int = Field(nullable=False)
-    format: MovieFormat = Field(nullable=False)
+    format: MovieFormat = Field(nullable=False)
