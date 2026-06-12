@@ -18,12 +18,21 @@ class SeatService:
         return self.seat_repo.get_by_room_id(room_id)
     
     def create(self, seat: Seat) -> Seat:
+        existing_seat = self.seat_repo.get_by_room_id_and_seat_number(seat.room_id, seat.seat_number)
+        if existing_seat:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Seat '{seat.seat_number}' in room '{seat.room.name}' already exists")
         return self.seat_repo.create(seat)
     
     def update(self, seat_id: int, seat_data: Seat) -> Seat:
         seat = self.seat_repo.get_by_id(seat_id)
         if seat is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Seat with ID {seat_id} not found")
+
+        if seat.seat_number != seat_data.seat_number or seat.room_id != seat_data.room_id:
+            existing_seat = self.seat_repo.get_by_room_id_and_seat_number(seat_data.room_id, seat_data.seat_number)
+            if existing_seat:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Seat '{seat_data.seat_number}' in room '{seat_data.room.name}' already exists")
+
         seat.room_id = seat_data.room_id
         seat.seat_number = seat_data.seat_number
         seat.is_vip = seat_data.is_vip

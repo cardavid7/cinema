@@ -13,6 +13,9 @@ class SeatRepository:
     def get_by_room_id(self, room_id: int) -> list[Seat]:
         return self.db.exec(select(Seat).where(Seat.room_id == room_id).order_by(Seat.seat_number.asc())).all()
 
+    def get_by_room_id_and_seat_number(self, room_id: int, seat_number: str) -> Seat | None:
+        return self.db.exec(select(Seat).where(Seat.room_id == room_id, Seat.seat_number == seat_number)).first()
+
     def create(self, seat: Seat):
         self.db.add(seat)
         self.db.commit()
