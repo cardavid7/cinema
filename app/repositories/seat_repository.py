@@ -1,7 +1,7 @@
 
 from sqlmodel import Session, select
 
-from app.models.seat import Seat
+from app.models.seat import Seat, SeatCreate, SeatUpdate
 
 class SeatRepository:
     def __init__(self, db: Session):
@@ -16,13 +16,14 @@ class SeatRepository:
     def get_by_room_id_and_seat_number(self, room_id: int, seat_number: str) -> Seat | None:
         return self.db.exec(select(Seat).where(Seat.room_id == room_id, Seat.seat_number == seat_number)).first()
 
-    def create(self, seat: Seat):
-        self.db.add(seat)
+    def create(self, seat_data: SeatCreate) -> Seat:
+        db_seat = Seat.model_validate(seat_data)
+        self.db.add(db_seat)
         self.db.commit()
-        self.db.refresh(seat)
-        return seat
+        self.db.refresh(db_seat)
+        return db_seat
 
-    def update(self, seat: Seat):
+    def update(self, seat: Seat) -> Seat:
         self.db.add(seat)
         self.db.commit()
         self.db.refresh(seat)

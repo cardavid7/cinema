@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from app.models.room import Room
+from app.models.room import Room, RoomCreate, RoomUpdate
 
 class RoomRepository:
     def __init__(self, db: Session):
@@ -16,13 +16,14 @@ class RoomRepository:
     def get_by_name(self, name: str) -> Room | None:
         return self.db.exec(select(Room).where(Room.name == name)).first()
 
-    def create(self, room: Room) -> Room:
-        self.db.add(room)
+    def create(self, room_data: RoomCreate) -> Room:
+        db_room = Room.model_validate(room_data)
+        self.db.add(db_room)
         self.db.commit()
-        self.db.refresh(room)
-        return room
+        self.db.refresh(db_room)
+        return db_room
 
-    def update(self, room: Room):
+    def update(self, room: Room) -> Room:
         self.db.add(room)
         self.db.commit()
         self.db.refresh(room)

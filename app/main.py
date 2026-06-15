@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.core.db import init_db
-from app.seeds.room import seed_rooms
+from app.api.routers.room_router import router as room_router
+from app.api.routers.seat_router import router as seat_router
+
+API_PREFIX = "/api/v1"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +25,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+app.include_router(room_router, prefix=API_PREFIX)
+app.include_router(seat_router, prefix=API_PREFIX)
+
 
 @app.get("/")
 def read_root():
