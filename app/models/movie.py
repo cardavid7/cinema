@@ -15,3 +15,15 @@ class Movie(SQLModel, table=True):
     description: str = Field(nullable=False)
     duration: int = Field(nullable=False)
     format: MovieFormat = Field(nullable=False)
+
+class MovieCreate(SQLModel):
+    title: str
+    description: str
+    duration: int
+    format: MovieFormat
+
+class MovieUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    duration: Optional[int] = None
+    format: Optional[MovieFormat] = None
