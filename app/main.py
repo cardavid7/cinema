@@ -4,6 +4,7 @@ from app.core.db import init_db
 from app.api.routers.room_router import router as room_router
 from app.api.routers.seat_router import router as seat_router
 from app.api.routers.movie_router import router as movie_router
+from app.api.routers.function_router import router as function_router
 
 API_PREFIX = "/api/v1"
 
@@ -30,6 +31,7 @@ app = FastAPI(
 app.include_router(room_router, prefix=API_PREFIX)
 app.include_router(seat_router, prefix=API_PREFIX)
 app.include_router(movie_router, prefix=API_PREFIX)
+app.include_router(function_router, prefix=API_PREFIX)
 
 
 @app.get("/")

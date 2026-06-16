@@ -8,3 +8,15 @@ class Function(SQLModel, table=True):
     start_time: str = Field(nullable=False)
     end_time: str = Field(nullable=False)
     price: float = Field(nullable=False)
+
+class FunctionCreate(SQLModel):
+    movie_id: int 
+    room_id: int 
+    start_time: str 
+    price: float 
+
+class FunctionUpdate(SQLModel):
+    movie_id: int
+    room_id: int 
+    start_time: str
+    price: float
