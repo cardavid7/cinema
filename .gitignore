@@ -219,6 +219,7 @@ __marimo__/
 
 # draw.io
 *.drawio
+*.drawio.*
 
 # SQLite Database
 *.db
