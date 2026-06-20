@@ -6,6 +6,7 @@ from app.api.routers.seat_router import router as seat_router
 from app.api.routers.movie_router import router as movie_router
 from app.api.routers.function_router import router as function_router
 from app.api.routers.user_router import router as user_router
+from app.api.routers.reservation_router import router as reservation_router
 
 API_PREFIX = "/api/v1"
 
@@ -30,6 +31,7 @@ app = FastAPI(
 )
 
 app.include_router(user_router, prefix=API_PREFIX)
+app.include_router(reservation_router, prefix=API_PREFIX)
 app.include_router(function_router, prefix=API_PREFIX)
 app.include_router(seat_router, prefix=API_PREFIX)
 app.include_router(movie_router, prefix=API_PREFIX)

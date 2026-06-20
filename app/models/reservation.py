@@ -1,10 +1,9 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
 from datetime import datetime
 from typing import Optional
 
 class ReservationStatus(str, Enum):
-    PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     CANCELLED = "CANCELLED"
 
@@ -16,3 +15,21 @@ class Reservation(SQLModel, table=True):
     status: ReservationStatus = Field(nullable=False)
     created_at: str = Field(default=str(datetime.now()))
     updated_at: str = Field(default=str(datetime.now()))
+
+class ReservationCreate(SQLModel):
+    user_id: int
+    function_id: int
+    seat_id: int
+    status: ReservationStatus
+
+class ReservationUpdate(SQLModel):
+    status: ReservationStatus
+
+class ReservationRead(SQLModel):
+    id: int
+    user_id: int
+    function_id: int
+    seat_id: int
+    status: ReservationStatus
+    created_at: str
+    updated_at: str
