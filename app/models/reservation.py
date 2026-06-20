@@ -2,6 +2,9 @@ from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
 from datetime import datetime
 from typing import Optional
+from app.models.user import User
+from app.models.function import Function
+from app.models.seat import Seat
 
 class ReservationStatus(str, Enum):
     CONFIRMED = "CONFIRMED"
@@ -15,6 +18,10 @@ class Reservation(SQLModel, table=True):
     status: ReservationStatus = Field(nullable=False)
     created_at: str = Field(default=str(datetime.now()))
     updated_at: str = Field(default=str(datetime.now()))
+
+    user: Optional[User] = Relationship(sa_relationship_kwargs={"lazy": "joined"})
+    function: Optional[Function] = Relationship(sa_relationship_kwargs={"lazy": "joined"})
+    seat: Optional[Seat] = Relationship(sa_relationship_kwargs={"lazy": "joined"})
 
 class ReservationCreate(SQLModel):
     user_id: int
@@ -33,3 +40,6 @@ class ReservationRead(SQLModel):
     status: ReservationStatus
     created_at: str
     updated_at: str
+    user: Optional[User] = None
+    function: Optional[Function] = None
+    seat: Optional[Seat] = None
