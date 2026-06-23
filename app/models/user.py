@@ -19,3 +19,13 @@ class UserUpdate(SQLModel):
     email: EmailStr
     password: str
     is_active: bool
+
+class UserRead(SQLModel):
+    id: int
+    username: str
+    email: EmailStr
+    is_active: bool
+
+class UserLogin(SQLModel):
+    email: EmailStr
+    password: str

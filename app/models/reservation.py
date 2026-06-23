@@ -24,7 +24,6 @@ class Reservation(SQLModel, table=True):
     seat: Optional[Seat] = Relationship(sa_relationship_kwargs={"lazy": "joined"})
 
 class ReservationCreate(SQLModel):
-    user_id: int
     function_id: int
     seat_id: int
     status: ReservationStatus

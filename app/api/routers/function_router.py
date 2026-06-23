@@ -1,8 +1,8 @@
 
 from fastapi import APIRouter
 
-from app.models.function import Function, FunctionCreate, FunctionUpdate, FunctionRead
-from app.api.depends import DBSession
+from app.models.function import FunctionCreate, FunctionUpdate, FunctionRead
+from app.api.depends import DBSession, CurrentUser
 from app.services.function_service import FunctionService
 
 router = APIRouter(prefix='/functions', tags=['Functions'])
@@ -23,16 +23,16 @@ def get_all_by_room_id(db:DBSession, room_id: int):
     return service.get_all_by_room_id(room_id)
 
 @router.post('/', response_model=FunctionRead, status_code=201)
-def create_function(db:DBSession, function: FunctionCreate):
+def create_function(db:DBSession, function: FunctionCreate, user: CurrentUser):
     service = FunctionService(db)
     return service.create(function)
 
 @router.put('/{function_id}', response_model=FunctionRead, status_code=200)
-def update_function(db:DBSession, function_id: int, function: FunctionUpdate):
+def update_function(db:DBSession, function_id: int, function: FunctionUpdate, user: CurrentUser):
     service = FunctionService(db)
     return service.update(function_id, function)
 
 @router.delete('/{function_id}', status_code=204)
-def delete_function(db:DBSession, function_id: int):
+def delete_function(db:DBSession, function_id: int, user: CurrentUser):
     service = FunctionService(db)
     return service.delete(function_id)

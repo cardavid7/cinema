@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 
 from app.models.user import User, UserCreate, UserUpdate
 from app.repositories.user_repository import UserRepository
+from app.core.security import hash_password
 
 class UserService:
     def __init__(self, db: Session):
@@ -32,7 +33,7 @@ class UserService:
         user = User(
             username=user_data.username,
             email=user_data.email,
-            hashed_password=user_data.password,
+            hashed_password=hash_password(user_data.password),
             is_active=True
         )
         return self.user_repo.create(user)
@@ -45,7 +46,7 @@ class UserService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User with email {user_data.email} already exists")
         user.username = user_data.username
         user.email = user_data.email
-        user.hashed_password = user_data.password
+        user.hashed_password = hash_password(user_data.password)
         user.is_active = user_data.is_active
         return self.user_repo.update(user)
 

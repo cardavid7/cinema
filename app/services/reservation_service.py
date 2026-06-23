@@ -33,16 +33,16 @@ class ReservationService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Reservations with function ID {function_id} not found")
         return reservations
 
-    def create(self, reservation_data: ReservationCreate) -> Reservation:
+    def create(self, reservation_data: ReservationCreate, user_id: int) -> Reservation:
         function = self.function_repo.get_by_id(reservation_data.function_id)
         if function is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Function with ID {reservation_data.function_id} not found")
         seat = self.seat_repo.get_by_id(reservation_data.seat_id)
         if seat is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Seat with ID {reservation_data.seat_id} not found")
-        user = self.user_repo.get_by_id(reservation_data.user_id)
+        user = self.user_repo.get_by_id(user_id)
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {reservation_data.user_id} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {user_id} not found")
 
         if seat.room_id != function.room_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Seat is not in the same room as the function")
@@ -59,7 +59,7 @@ class ReservationService:
             )
         
         db_reservation = Reservation(
-            user_id=reservation_data.user_id,
+            user_id=user_id,
             function_id=reservation_data.function_id,
             seat_id=reservation_data.seat_id,
             status=reservation_data.status,
