@@ -1,6 +1,7 @@
 from sqlmodel import Session
 from fastapi import HTTPException, status
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 from app.repositories.reservation_repository import ReservationRepository
 from app.repositories.function_repository import FunctionRepository
@@ -66,7 +67,13 @@ class ReservationService:
             created_at=datetime.now().isoformat(),
             updated_at=datetime.now().isoformat()
         )
-        return self.reservation_repo.create(db_reservation)
+        try:
+            return self.reservation_repo.create(db_reservation)
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Seat {reservation_data.seat_id} is already reserved for function {reservation_data.function_id}"
+            )
 
     def update(self, reservation_id: int, reservation_data: ReservationUpdate):
 

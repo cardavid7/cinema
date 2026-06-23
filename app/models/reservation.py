@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
 from datetime import datetime
 from typing import Optional
+from sqlalchemy import Index
 from app.models.user import User
 from app.models.function import Function
 from app.models.seat import Seat
@@ -11,6 +12,17 @@ class ReservationStatus(str, Enum):
     CANCELLED = "CANCELLED"
 
 class Reservation(SQLModel, table=True):
+    __table_args__ = (
+        Index(
+            "uix_function_seat_confirmed",
+            "function_id",
+            "seat_id",
+            unique=True,
+            postgresql_where="status = 'CONFIRMED'",
+            sqlite_where="status = 'CONFIRMED'"
+        ),
+    )
+
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id", index=True, nullable=False)
     function_id: int = Field(foreign_key="function.id", index=True, nullable=False)
