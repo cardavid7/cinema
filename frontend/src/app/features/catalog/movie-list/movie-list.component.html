@@ -1,0 +1,46 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-5xl">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="text-3xl font-semibold text-slate-800">Cartelera</h1>
+
+      <form [formGroup]="searchForm" (ngSubmit)="search()" class="flex gap-2">
+        <input
+          type="text"
+          formControlName="title"
+          placeholder="Buscar por título..."
+          class="w-56 rounded border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="rounded bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700"
+        >
+          Buscar
+        </button>
+      </form>
+    </div>
+
+    @if (loading()) {
+      <p class="text-slate-600">Cargando películas...</p>
+    } @else if (errorMessage()) {
+      <p class="text-red-600">{{ errorMessage() }}</p>
+    }
+
+    @if (!loading() && movies().length > 0) {
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @for (movie of movies(); track movie.id) {
+          <a
+            [routerLink]="['/movies', movie.id]"
+            class="block rounded-lg bg-white p-5 shadow transition hover:shadow-md"
+          >
+            <h2 class="mb-1 text-lg font-semibold text-slate-800">{{ movie.title }}</h2>
+            <p class="mb-3 line-clamp-2 text-sm text-slate-600">{{ movie.description }}</p>
+            <div class="flex items-center gap-2 text-xs font-medium text-indigo-700">
+              <span class="rounded bg-indigo-100 px-2 py-1">{{ movie.format }}</span>
+              <span class="rounded bg-slate-100 px-2 py-1 text-slate-600">{{ movie.duration }} min</span>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</div>

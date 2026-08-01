@@ -6,6 +6,11 @@ from app.services.movie_service import MovieService
 
 router = APIRouter(prefix='/movies', tags=['Movies'])
 
+@router.get("/", response_model=List[Movie], status_code=200)
+def list_movies(db: DBSession):
+    service = MovieService(db)
+    return service.get_all()
+
 @router.get("/{movie_id}", response_model=Movie, status_code=200)
 def get_movie_by_id(db: DBSession, movie_id: int):
     service = MovieService(db)

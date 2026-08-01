@@ -8,6 +8,9 @@ class MovieRepository:
     def get_by_id(self, movie_id: int) -> Movie | None:
         return self.db.get(Movie, movie_id)
 
+    def get_all(self) -> list[Movie]:
+        return self.db.exec(select(Movie)).all()
+
     def get_by_title(self, title: str) -> list[Movie] | None:
         return self.db.exec(select(Movie).where(Movie.title.ilike(f"%{title}%"))).all()
 

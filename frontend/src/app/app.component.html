@@ -1,1 +1,15 @@
+<nav class="flex items-center justify-between bg-slate-800 px-6 py-3 text-white">
+  <a routerLink="/" class="text-lg font-semibold">🎬 Cinema</a>
+
+  <div class="flex items-center gap-4 text-sm">
+    @if (isAuthenticated()) {
+      <a routerLink="/account" class="hover:underline">Mi cuenta</a>
+      <button type="button" (click)="logout()" class="hover:underline">Cerrar sesión</button>
+    } @else {
+      <a routerLink="/auth/login" class="hover:underline">Iniciar sesión</a>
+      <a routerLink="/auth/register" class="hover:underline">Registrarme</a>
+    }
+  </div>
+</nav>
+
 <router-outlet />

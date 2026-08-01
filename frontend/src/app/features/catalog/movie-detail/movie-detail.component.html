@@ -1,0 +1,54 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-3xl">
+    <a routerLink="/" class="mb-4 inline-block text-sm font-medium text-indigo-600 hover:underline">
+      ← Volver a la cartelera
+    </a>
+
+    @if (loading()) {
+      <p class="text-slate-600">Cargando...</p>
+    } @else if (errorMessage()) {
+      <p class="text-red-600">{{ errorMessage() }}</p>
+    } @else {
+      @if (movie(); as m) {
+        <div class="rounded-lg bg-white p-6 shadow">
+          <h1 class="mb-2 text-2xl font-semibold text-slate-800">{{ m.title }}</h1>
+          <div class="mb-4 flex gap-2 text-xs font-medium text-indigo-700">
+            <span class="rounded bg-indigo-100 px-2 py-1">{{ m.format }}</span>
+            <span class="rounded bg-slate-100 px-2 py-1 text-slate-600">{{ m.duration }} min</span>
+          </div>
+          <p class="text-slate-700">{{ m.description }}</p>
+        </div>
+
+        <h2 class="mb-3 mt-8 text-xl font-semibold text-slate-800">Funciones disponibles</h2>
+
+        @if (functions().length === 0) {
+          <p class="text-slate-600">No hay funciones programadas para esta película.</p>
+        } @else {
+          <div class="space-y-3">
+            @for (fn of functions(); track fn.id) {
+              <div class="flex items-center justify-between rounded-lg bg-white p-4 shadow">
+                <div>
+                  <p class="font-medium text-slate-800">{{ fn.room?.name }}</p>
+                  <p class="text-sm text-slate-600">
+                    {{ fn.start_time | date: 'EEE d MMM, HH:mm' }} - {{ fn.end_time | date: 'HH:mm' }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="font-semibold text-slate-800">{{ fn.price | currency }}</span>
+                  <button
+                    type="button"
+                    disabled
+                    class="cursor-not-allowed rounded bg-slate-300 px-4 py-2 text-sm font-medium text-slate-600"
+                    title="Selección de asientos disponible en la Fase 3"
+                  >
+                    Reservar
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</div>
