@@ -33,31 +33,33 @@
       <div class="mb-6 rounded-lg bg-white p-6 shadow">
         <div class="mb-6 h-2 rounded bg-slate-300" title="Pantalla"></div>
 
-        <div class="space-y-2">
-          @for (row of seatRows(); track row.label) {
-            <div class="flex items-center justify-center gap-2">
-              <span class="w-4 text-xs font-medium text-slate-500">{{ row.label }}</span>
-              @for (seat of row.seats; track seat.id) {
-                <button
-                  type="button"
-                  [disabled]="isOccupied(seat)"
-                  (click)="selectSeat(seat)"
-                  [class]="
-                    'h-8 w-8 rounded text-xs font-medium transition ' +
-                    (isOccupied(seat)
-                      ? 'cursor-not-allowed bg-slate-300 text-slate-500'
-                      : selectedSeat()?.id === seat.id
-                        ? 'bg-indigo-600 text-white'
-                        : seat.is_vip
-                          ? 'bg-amber-200 text-amber-900 hover:bg-amber-300'
-                          : 'bg-slate-200 text-slate-700 hover:bg-slate-300')
-                  "
-                >
-                  {{ seat.seat_number }}
-                </button>
-              }
-            </div>
-          }
+        <div class="overflow-x-auto">
+          <div class="mx-auto w-fit space-y-2">
+            @for (row of seatRows(); track row.label) {
+              <div class="flex items-center gap-2">
+                <span class="w-4 shrink-0 text-xs font-medium text-slate-500">{{ row.label }}</span>
+                @for (seat of row.seats; track seat.id) {
+                  <button
+                    type="button"
+                    [disabled]="isOccupied(seat)"
+                    (click)="selectSeat(seat)"
+                    [class]="
+                      'h-8 w-8 shrink-0 rounded text-xs font-medium transition ' +
+                      (isOccupied(seat)
+                        ? 'cursor-not-allowed bg-slate-300 text-slate-500'
+                        : selectedSeat()?.id === seat.id
+                          ? 'bg-indigo-600 text-white'
+                          : seat.is_vip
+                            ? 'bg-amber-200 text-amber-900 hover:bg-amber-300'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300')
+                    "
+                  >
+                    {{ seat.seat_number }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <div class="mt-6 flex justify-center gap-4 text-xs text-slate-600">

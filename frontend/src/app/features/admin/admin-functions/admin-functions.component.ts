@@ -7,6 +7,7 @@ import { FunctionService } from '../../../core/services/function.service';
 import { MovieService } from '../../../core/services/movie.service';
 import { RoomService } from '../../../core/services/room.service';
 import { CinemaFunction, Movie, Room } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 @Component({
   selector: 'app-admin-functions',
@@ -97,8 +98,7 @@ export class AdminFunctionsComponent {
         this.startCreate();
         this.load();
       },
-      error: (err) =>
-        this.errorMessage.set(err.error?.detail ?? 'No se pudo guardar la función.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar la función.'))
     });
   }
 
@@ -108,7 +108,7 @@ export class AdminFunctionsComponent {
     }
     this.functionService.delete(fn.id).subscribe({
       next: () => this.load(),
-      error: () => this.errorMessage.set('No se pudo eliminar la función.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo eliminar la función.'))
     });
   }
 }

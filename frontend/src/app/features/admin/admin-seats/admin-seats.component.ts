@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { RoomService } from '../../../core/services/room.service';
 import { SeatService } from '../../../core/services/seat.service';
 import { Room, Seat } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 @Component({
   selector: 'app-admin-seats',
@@ -89,7 +90,7 @@ export class AdminSeatsComponent {
         this.startCreate();
         this.loadSeats();
       },
-      error: () => this.errorMessage.set('No se pudo guardar el asiento.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar el asiento.'))
     });
   }
 
@@ -99,7 +100,7 @@ export class AdminSeatsComponent {
     }
     this.seatService.delete(seat.id).subscribe({
       next: () => this.loadSeats(),
-      error: () => this.errorMessage.set('No se pudo eliminar el asiento.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo eliminar el asiento.'))
     });
   }
 }

@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RoomService } from '../../../core/services/room.service';
 import { Room } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 @Component({
   selector: 'app-admin-rooms',
@@ -69,7 +70,7 @@ export class AdminRoomsComponent {
         this.startCreate();
         this.load();
       },
-      error: () => this.errorMessage.set('No se pudo guardar la sala.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar la sala.'))
     });
   }
 
@@ -79,7 +80,7 @@ export class AdminRoomsComponent {
     }
     this.roomService.delete(room.id).subscribe({
       next: () => this.load(),
-      error: () => this.errorMessage.set('No se pudo eliminar la sala.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo eliminar la sala.'))
     });
   }
 }

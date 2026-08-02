@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MovieService } from '../../../core/services/movie.service';
 import { Movie, MovieFormat } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 @Component({
   selector: 'app-admin-movies',
@@ -77,7 +78,7 @@ export class AdminMoviesComponent {
         this.startCreate();
         this.load();
       },
-      error: () => this.errorMessage.set('No se pudo guardar la película.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar la película.'))
     });
   }
 
@@ -87,7 +88,7 @@ export class AdminMoviesComponent {
     }
     this.movieService.delete(movie.id).subscribe({
       next: () => this.load(),
-      error: () => this.errorMessage.set('No se pudo eliminar la película.')
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'No se pudo eliminar la película.'))
     });
   }
 }

@@ -5,6 +5,7 @@ import { catchError, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { Reservation } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 @Component({
   selector: 'app-my-reservations',
@@ -53,9 +54,9 @@ export class MyReservationsComponent {
         this.cancellingId.set(null);
         this.load();
       },
-      error: () => {
+      error: (err) => {
         this.cancellingId.set(null);
-        this.errorMessage.set('No se pudo cancelar la reserva.');
+        this.errorMessage.set(extractErrorMessage(err, 'No se pudo cancelar la reserva.'));
       }
     });
   }

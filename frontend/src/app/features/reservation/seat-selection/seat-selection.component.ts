@@ -6,6 +6,7 @@ import { FunctionService } from '../../../core/services/function.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { SeatService } from '../../../core/services/seat.service';
 import { CinemaFunction, Seat } from '../../../shared/models';
+import { extractErrorMessage } from '../../../shared/utils/http-error';
 
 interface SeatRow {
   label: string;
@@ -126,7 +127,7 @@ export class SeatSelectionComponent {
             this.selectedSeat.set(null);
             this.loadSeatsAndReservations(this.cinemaFunction()!.room_id);
           } else {
-            this.errorMessage.set('No se pudo completar la reserva.');
+            this.errorMessage.set(extractErrorMessage(err, 'No se pudo completar la reserva.'));
           }
         }
       });
