@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-2xl">
+    <h1 class="mb-6 text-2xl font-semibold text-slate-800">Mis reservas</h1>
+
+    @if (errorMessage()) {
+      <p class="mb-4 text-red-600">{{ errorMessage() }}</p>
+    }
+
+    @if (loading()) {
+      <p class="text-slate-600">Cargando...</p>
+    } @else if (reservations().length === 0) {
+      <p class="text-slate-600">
+        Todavía no tenés reservas.
+        <a routerLink="/" class="font-medium text-indigo-600 hover:underline">Ver cartelera</a>
+      </p>
+    } @else {
+      <div class="space-y-3">
+        @for (reservation of reservations(); track reservation.id) {
+          <div class="rounded-lg bg-white p-4 shadow">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="font-medium text-slate-800">{{ reservation.function?.movie?.title }}</p>
+                <p class="text-sm text-slate-600">
+                  {{ reservation.function?.start_time | date: 'EEE d MMM, HH:mm' }} ·
+                  {{ reservation.function?.room?.name }} · Asiento {{ reservation.seat?.seat_number }}
+                </p>
+                <p class="mt-1 text-xs font-medium uppercase tracking-wide"
+                   [class.text-emerald-600]="reservation.status === 'CONFIRMED'"
+                   [class.text-slate-400]="reservation.status === 'CANCELLED'"
+                >
+                  {{ reservation.status === 'CONFIRMED' ? 'Confirmada' : 'Cancelada' }}
+                </p>
+              </div>
+
+              @if (reservation.status === 'CONFIRMED') {
+                <button
+                  type="button"
+                  [disabled]="cancellingId() === reservation.id"
+                  (click)="cancel(reservation)"
+                  class="rounded bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                >
+                  {{ cancellingId() === reservation.id ? 'Cancelando...' : 'Cancelar' }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

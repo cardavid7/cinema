@@ -21,7 +21,7 @@ export class ReservationService {
     return this.http.get<Reservation[]>(`${API_BASE}/user/${userId}`);
   }
 
-  cancel(reservationId: number): Observable<void> {
-    return this.http.delete<void>(`${API_BASE}/${reservationId}`);
+  cancel(reservationId: number): Observable<Reservation> {
+    return this.http.put<Reservation>(`${API_BASE}/${reservationId}`, { status: 'CANCELLED' });
   }
 }

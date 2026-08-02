@@ -6,12 +6,27 @@ import { AuthCredentials, AuthResponse, User } from '../../shared/models';
 const TOKEN_KEY = 'cinema_access_token';
 const API_BASE = '/api/v1';
 
+function decodeUserId(token: string | null): number | null {
+  if (!token) {
+    return null;
+  }
+  try {
+    const payload = token.split('.')[1];
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const { sub } = JSON.parse(atob(normalized));
+    return sub ? Number(sub) : null;
+  } catch {
+    return null;
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly tokenSignal = signal<string | null>(localStorage.getItem(TOKEN_KEY));
 
   readonly token = computed(() => this.tokenSignal());
   readonly isAuthenticated = computed(() => !!this.tokenSignal());
+  readonly currentUserId = computed(() => decodeUserId(this.tokenSignal()));
 
   constructor(private readonly http: HttpClient) {}
 

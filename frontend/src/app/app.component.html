@@ -3,6 +3,7 @@
 
   <div class="flex items-center gap-4 text-sm">
     @if (isAuthenticated()) {
+      <a routerLink="/account/reservations" class="hover:underline">Mis reservas</a>
       <a routerLink="/account" class="hover:underline">Mi cuenta</a>
       <button type="button" (click)="logout()" class="hover:underline">Cerrar sesión</button>
     } @else {
