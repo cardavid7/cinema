@@ -22,6 +22,14 @@ export const routes: Routes = [
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent)
   },
   {
+    path: 'functions/:id/seats',
+    loadComponent: () =>
+      import('./features/reservation/seat-selection/seat-selection.component').then(
+        (m) => m.SeatSelectionComponent
+      ),
+    canActivate: [authGuard]
+  },
+  {
     path: 'account',
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
     canActivate: [authGuard]
