@@ -2,10 +2,15 @@
 from fastapi import APIRouter
 
 from app.models.function import FunctionCreate, FunctionUpdate, FunctionRead
-from app.api.depends import DBSession, CurrentUser
+from app.api.depends import DBSession, AdminUser
 from app.services.function_service import FunctionService
 
 router = APIRouter(prefix='/functions', tags=['Functions'])
+
+@router.get('/', response_model=list[FunctionRead], status_code=200)
+def list_functions(db: DBSession):
+    service = FunctionService(db)
+    return service.get_all()
 
 @router.get('/{function_id}', response_model=FunctionRead, status_code=200)
 def get_function_by_id(db:DBSession, function_id: int):
@@ -23,16 +28,16 @@ def get_all_by_room_id(db:DBSession, room_id: int):
     return service.get_all_by_room_id(room_id)
 
 @router.post('/', response_model=FunctionRead, status_code=201)
-def create_function(db:DBSession, function: FunctionCreate, user: CurrentUser):
+def create_function(db:DBSession, function: FunctionCreate, user: AdminUser):
     service = FunctionService(db)
     return service.create(function)
 
 @router.put('/{function_id}', response_model=FunctionRead, status_code=200)
-def update_function(db:DBSession, function_id: int, function: FunctionUpdate, user: CurrentUser):
+def update_function(db:DBSession, function_id: int, function: FunctionUpdate, user: AdminUser):
     service = FunctionService(db)
     return service.update(function_id, function)
 
 @router.delete('/{function_id}', status_code=204)
-def delete_function(db:DBSession, function_id: int, user: CurrentUser):
+def delete_function(db:DBSession, function_id: int, user: AdminUser):
     service = FunctionService(db)
     return service.delete(function_id)

@@ -1,8 +1,11 @@
+export type UserRole = 'admin' | 'user';
+
 export interface User {
   id: number;
   username: string;
   email: string;
   is_active: boolean;
+  role: UserRole;
 }
 
 export interface AuthCredentials {

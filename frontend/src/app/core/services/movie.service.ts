@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Movie } from '../../shared/models';
+import { Movie, MovieCreate, MovieUpdate } from '../../shared/models';
 
 const API_BASE = '/api/v1/movies';
 
@@ -19,5 +19,17 @@ export class MovieService {
 
   searchByTitle(title: string): Observable<Movie[]> {
     return this.http.get<Movie[]>(`${API_BASE}/title/${encodeURIComponent(title)}`);
+  }
+
+  create(movie: MovieCreate): Observable<Movie> {
+    return this.http.post<Movie>(`${API_BASE}/`, movie);
+  }
+
+  update(movieId: number, movie: MovieUpdate): Observable<Movie> {
+    return this.http.put<Movie>(`${API_BASE}/${movieId}`, movie);
+  }
+
+  delete(movieId: number): Observable<void> {
+    return this.http.delete<void>(`${API_BASE}/${movieId}`);
   }
 }

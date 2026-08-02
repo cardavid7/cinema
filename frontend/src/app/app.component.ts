@@ -13,6 +13,7 @@ export class AppComponent {
   private readonly router = inject(Router);
 
   readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly isAdmin = this.authService.isAdmin;
 
   logout(): void {
     this.authService.logout();

@@ -1,0 +1,71 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-4xl">
+    <a routerLink="/admin" class="mb-4 inline-block text-sm font-medium text-indigo-600 hover:underline">← Panel</a>
+    <h1 class="mb-6 text-2xl font-semibold text-slate-800">Películas</h1>
+
+    @if (errorMessage()) {
+      <p class="mb-4 text-red-600">{{ errorMessage() }}</p>
+    }
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-3 rounded-lg bg-white p-5 shadow">
+        <h2 class="font-semibold text-slate-800">{{ editingId() ? 'Editar película' : 'Nueva película' }}</h2>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Título</label>
+          <input formControlName="title" class="w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Descripción</label>
+          <textarea formControlName="description" rows="3" class="w-full rounded border border-slate-300 px-3 py-2"></textarea>
+        </div>
+
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Duración (min)</label>
+            <input type="number" formControlName="duration" class="w-full rounded border border-slate-300 px-3 py-2" />
+          </div>
+          <div class="flex-1">
+            <label class="mb-1 block text-sm font-medium text-slate-700">Formato</label>
+            <select formControlName="format" class="w-full rounded border border-slate-300 px-3 py-2">
+              @for (fmt of formats; track fmt) {
+                <option [value]="fmt">{{ fmt }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="submit" class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            {{ editingId() ? 'Guardar cambios' : 'Crear película' }}
+          </button>
+          @if (editingId()) {
+            <button type="button" (click)="startCreate()" class="rounded bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-300">
+              Cancelar
+            </button>
+          }
+        </div>
+      </form>
+
+      <div class="space-y-2">
+        @if (loading()) {
+          <p class="text-slate-600">Cargando...</p>
+        } @else {
+          @for (movie of movies(); track movie.id) {
+            <div class="flex items-center justify-between rounded-lg bg-white p-3 shadow">
+              <div>
+                <p class="font-medium text-slate-800">{{ movie.title }}</p>
+                <p class="text-xs text-slate-500">{{ movie.format }} · {{ movie.duration }} min</p>
+              </div>
+              <div class="flex gap-2 text-sm">
+                <button type="button" (click)="startEdit(movie)" class="text-indigo-600 hover:underline">Editar</button>
+                <button type="button" (click)="remove(movie)" class="text-red-600 hover:underline">Eliminar</button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

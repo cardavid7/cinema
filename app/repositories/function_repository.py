@@ -10,6 +10,9 @@ class FunctionRepository:
     def get_by_id(self, function_id: int) -> Function | None:
         return self.db.get(Function, function_id)
 
+    def get_all(self) -> list[Function]:
+        return self.db.exec(select(Function)).all()
+
     def get_all_by_movie_id(self, movie_id: int) -> list[Function] | None:
         return self.db.exec(select(Function).where(Function.movie_id == movie_id)).all()
 

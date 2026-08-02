@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -41,6 +42,40 @@ export const routes: Routes = [
         (m) => m.MyReservationsComponent
       ),
     canActivate: [authGuard]
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./features/admin/admin-dashboard/admin-dashboard.component').then(
+        (m) => m.AdminDashboardComponent
+      ),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/movies',
+    loadComponent: () =>
+      import('./features/admin/admin-movies/admin-movies.component').then((m) => m.AdminMoviesComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/rooms',
+    loadComponent: () =>
+      import('./features/admin/admin-rooms/admin-rooms.component').then((m) => m.AdminRoomsComponent),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/functions',
+    loadComponent: () =>
+      import('./features/admin/admin-functions/admin-functions.component').then(
+        (m) => m.AdminFunctionsComponent
+      ),
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/seats',
+    loadComponent: () =>
+      import('./features/admin/admin-seats/admin-seats.component').then((m) => m.AdminSeatsComponent),
+    canActivate: [adminGuard]
   },
   { path: '**', redirectTo: '' }
 ];

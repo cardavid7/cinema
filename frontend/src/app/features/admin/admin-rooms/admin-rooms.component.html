@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-3xl">
+    <a routerLink="/admin" class="mb-4 inline-block text-sm font-medium text-indigo-600 hover:underline">← Panel</a>
+    <h1 class="mb-6 text-2xl font-semibold text-slate-800">Salas</h1>
+
+    @if (errorMessage()) {
+      <p class="mb-4 text-red-600">{{ errorMessage() }}</p>
+    }
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-3 rounded-lg bg-white p-5 shadow">
+        <h2 class="font-semibold text-slate-800">{{ editingId() ? 'Editar sala' : 'Nueva sala' }}</h2>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Nombre</label>
+          <input formControlName="name" class="w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">Capacidad</label>
+          <input type="number" formControlName="capacity" class="w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+
+        <div class="flex gap-2">
+          <button type="submit" class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+            {{ editingId() ? 'Guardar cambios' : 'Crear sala' }}
+          </button>
+          @if (editingId()) {
+            <button type="button" (click)="startCreate()" class="rounded bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-300">
+              Cancelar
+            </button>
+          }
+        </div>
+      </form>
+
+      <div class="space-y-2">
+        @if (loading()) {
+          <p class="text-slate-600">Cargando...</p>
+        } @else {
+          @for (room of rooms(); track room.id) {
+            <div class="flex items-center justify-between rounded-lg bg-white p-3 shadow">
+              <div>
+                <p class="font-medium text-slate-800">{{ room.name }}</p>
+                <p class="text-xs text-slate-500">Capacidad: {{ room.capacity }}</p>
+              </div>
+              <div class="flex gap-2 text-sm">
+                <button type="button" (click)="startEdit(room)" class="text-indigo-600 hover:underline">Editar</button>
+                <button type="button" (click)="remove(room)" class="text-red-600 hover:underline">Eliminar</button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>
