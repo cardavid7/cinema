@@ -2,9 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AuthCredentials, AuthResponse, User } from '../../shared/models';
+import { environment } from '../../../environments/environment';
 
 const TOKEN_KEY = 'cinema_access_token';
-const API_BASE = '/api/v1';
+const API_BASE = `${environment.apiUrl}/api/v1`;
 
 interface TokenPayload {
   sub: string;

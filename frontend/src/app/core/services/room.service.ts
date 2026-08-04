@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Room, RoomCreate, RoomUpdate } from '../../shared/models';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = '/api/v1/rooms';
+const API_BASE = `${environment.apiUrl}/api/v1/rooms`;
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
