@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from sqlalchemy import Index
 from app.models.user import User, UserRead
-from app.models.function import Function
+from app.models.function import Function, FunctionRead
 from app.models.seat import Seat
 
 class ReservationStatus(str, Enum):
@@ -52,5 +52,5 @@ class ReservationRead(SQLModel):
     created_at: str
     updated_at: str
     user: Optional[UserRead] = None
-    function: Optional[Function] = None
+    function: Optional[FunctionRead] = None
     seat: Optional[Seat] = None
