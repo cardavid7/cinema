@@ -20,6 +20,9 @@ class FunctionService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Function with ID {function_id} not found")
         return function
 
+    def get_all(self) -> list[Function]:
+        return self.funtion_repo.get_all()
+
     def get_all_by_movie_id(self, movie_id: int) -> list[Function]:
         functions = self.funtion_repo.get_all_by_movie_id(movie_id)
         if not functions:

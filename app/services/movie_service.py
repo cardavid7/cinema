@@ -15,6 +15,9 @@ class MovieService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Movie with ID {movie_id} not found")
         return movie
 
+    def get_all(self) -> List[Movie]:
+        return self.movie_repo.get_all()
+
     def get_by_title(self, title: str) -> List[Movie]:
         movies = self.movie_repo.get_by_title(title)
         if not movies:

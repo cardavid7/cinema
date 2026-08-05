@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from typing import List
 
 from app.models.room import Room, RoomCreate, RoomUpdate
-from app.api.depends import DBSession, CurrentUser
+from app.api.depends import DBSession, AdminUser
 from app.services.room_service import RoomService
 
 router = APIRouter(prefix='/rooms', tags=['Rooms'])
@@ -18,16 +18,16 @@ def get_room_by_id(db: DBSession, room_id: int):
     return service.get_by_id(room_id)
 
 @router.post("/", response_model=Room, status_code=201)
-def create_room(db: DBSession, room: RoomCreate, user: CurrentUser):
+def create_room(db: DBSession, room: RoomCreate, user: AdminUser):
     service = RoomService(db)
     return service.create(room)
 
 @router.put("/{room_id}", response_model=Room, status_code=200)
-def update_room(db: DBSession, room_id: int, room: RoomUpdate, user: CurrentUser):
+def update_room(db: DBSession, room_id: int, room: RoomUpdate, user: AdminUser):
     service = RoomService(db)
     return service.update(room_id, room)
 
 @router.delete("/{room_id}", status_code=204)
-def delete_room(db: DBSession, room_id: int, user: CurrentUser):
+def delete_room(db: DBSession, room_id: int, user: AdminUser):
     service = RoomService(db)
     return service.delete(room_id)

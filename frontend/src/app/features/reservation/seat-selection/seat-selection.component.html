@@ -1,0 +1,89 @@
+<div class="min-h-screen bg-slate-100 px-4 py-8">
+  <div class="mx-auto max-w-2xl">
+    @if (loading()) {
+      <p class="text-slate-600">Cargando asientos...</p>
+    } @else if (confirmedReservationId() !== null) {
+      <div class="rounded-lg bg-white p-6 text-center shadow">
+        <h1 class="mb-2 text-2xl font-semibold text-emerald-700">¡Reserva confirmada!</h1>
+        @if (cinemaFunction(); as fn) {
+          <p class="mb-1 text-slate-700">{{ fn.movie?.title }}</p>
+          <p class="mb-1 text-sm text-slate-600">
+            {{ fn.start_time | date: 'EEE d MMM, HH:mm' }} · {{ fn.room?.name }}
+          </p>
+          <p class="mb-1 text-sm text-slate-600">Asiento {{ selectedSeat()?.seat_number }}</p>
+          <p class="mb-4 font-semibold text-slate-800">{{ fn.price | currency }}</p>
+        }
+        <p class="mb-4 text-xs text-slate-500">Reserva #{{ confirmedReservationId() }}</p>
+        <a routerLink="/" class="font-medium text-indigo-600 hover:underline">Volver a la cartelera</a>
+      </div>
+    } @else {
+      @if (cinemaFunction(); as fn) {
+        <div class="mb-6 rounded-lg bg-white p-4 shadow">
+          <h1 class="text-xl font-semibold text-slate-800">{{ fn.movie?.title }}</h1>
+          <p class="text-sm text-slate-600">
+            {{ fn.start_time | date: 'EEE d MMM, HH:mm' }} · {{ fn.room?.name }} · {{ fn.price | currency }}
+          </p>
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <p class="mb-4 text-red-600">{{ errorMessage() }}</p>
+      }
+
+      <div class="mb-6 rounded-lg bg-white p-6 shadow">
+        <div class="mb-6 h-2 rounded bg-slate-300" title="Pantalla"></div>
+
+        <div class="overflow-x-auto">
+          <div class="mx-auto w-fit space-y-2">
+            @for (row of seatRows(); track row.label) {
+              <div class="flex items-center gap-2">
+                <span class="w-4 shrink-0 text-xs font-medium text-slate-500">{{ row.label }}</span>
+                @for (seat of row.seats; track seat.id) {
+                  <button
+                    type="button"
+                    [disabled]="isOccupied(seat)"
+                    (click)="selectSeat(seat)"
+                    [class]="
+                      'h-8 w-8 shrink-0 rounded text-xs font-medium transition ' +
+                      (isOccupied(seat)
+                        ? 'cursor-not-allowed bg-slate-300 text-slate-500'
+                        : selectedSeat()?.id === seat.id
+                          ? 'bg-indigo-600 text-white'
+                          : seat.is_vip
+                            ? 'bg-amber-200 text-amber-900 hover:bg-amber-300'
+                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300')
+                    "
+                  >
+                    {{ seat.seat_number }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-center gap-4 text-xs text-slate-600">
+          <span class="flex items-center gap-1"><span class="h-3 w-3 rounded bg-slate-200"></span> Libre</span>
+          <span class="flex items-center gap-1"><span class="h-3 w-3 rounded bg-amber-200"></span> VIP</span>
+          <span class="flex items-center gap-1"><span class="h-3 w-3 rounded bg-slate-300"></span> Ocupado</span>
+          <span class="flex items-center gap-1"><span class="h-3 w-3 rounded bg-indigo-600"></span> Seleccionado</span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        [disabled]="!selectedSeat() || submitting()"
+        (click)="confirmReservation()"
+        class="w-full rounded bg-indigo-600 py-3 font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50"
+      >
+        @if (submitting()) {
+          Confirmando...
+        } @else if (selectedSeat()) {
+          Reservar asiento {{ selectedSeat()!.seat_number }}
+        } @else {
+          Seleccioná un asiento
+        }
+      </button>
+    }
+  </div>
+</div>

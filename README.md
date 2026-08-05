@@ -17,6 +17,7 @@ A RESTful API for cinema seat reservation management built with **FastAPI**, **S
 - [Authentication](#authentication)
 - [Database](#database)
 - [Environment Variables](#environment-variables)
+- [Deployment](#deployment)
 - [Contributing](#contributing)
 
 ---
@@ -96,6 +97,9 @@ cinema/
 │   │   ├── reservation_service.py
 │   │   └── user_service.py
 │   └── seeds/                       # Seed scripts for initial data
+│       └── run_all.py               # Runs every seeder in dependency order (idempotent)
+├── frontend/                        # Angular SPA (see frontend/README.md)
+├── render.yaml                      # Render Blueprint: DB + backend + frontend in one deploy
 ├── .env.example                     # Environment variable template
 ├── .gitignore
 └── requirements.txt                 # Python dependencies
@@ -294,6 +298,16 @@ The project uses **SQLModel** (built on top of SQLAlchemy) as the ORM and suppor
 
 The database backend is automatically detected from the `DATABASE_URL` environment variable. SQLite requires no additional installation; PostgreSQL requires `psycopg` (included in `requirements.txt`).
 
+> **Note:** Managed providers (Render, Railway, Heroku, etc.) often hand out connection strings prefixed with `postgres://` or plain `postgresql://`. `app/core/db.py` normalizes both to `postgresql+psycopg://` automatically, so you can paste the provider's URL as-is into `DATABASE_URL`.
+
+### Seeding data
+
+`app/seeds/` contains one script per entity plus `run_all.py`, which runs them in the required dependency order (`user → movie → room → seat → function → reservation`). Every seeder checks for existing rows before inserting, so it's safe to re-run — including on every application startup in production (see [Deployment](#deployment)).
+
+```bash
+python -m app.seeds.run_all
+```
+
 ### Transactions
 
 Reservation creation uses database transactions to guarantee atomicity, preventing race conditions such as double-booking of the same seat.
@@ -323,8 +337,31 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
 | `JWT_SECRET_KEY` | Secret key used to sign JWT tokens | ✅ |
 | `JWT_ALGORITHM` | Algorithm for JWT signing (e.g. `HS256`) | ✅ |
 | `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration time in minutes | ✅ |
+| `CORS_ORIGINS` | Comma-separated list of allowed frontend origins (e.g. `https://cinema-frontend.onrender.com,http://localhost:4200`) | ✅ |
 
 > **Security note:** Never commit your `.env` file to version control. It is already included in `.gitignore`.
+
+---
+
+## Deployment
+
+This repository is set up to deploy as **three independent services**: a PostgreSQL database, this FastAPI backend, and the [Angular frontend](frontend/README.md#deployment). It also serves a single-process mode where the backend serves the built Angular app for every non-API route — useful for smaller or all-in-one deployments — but the split setup below is recommended for Render's free tier, since static sites don't sleep while free web services do.
+
+### Deploying to Render
+
+1. **Database** — create a **PostgreSQL** instance (Free plan). Copy its *Internal Database URL*.
+2. **Backend** — create a **Web Service** from this repo:
+   - Build command: `pip install -r requirements.txt`
+   - Start command:
+     ```bash
+     python -m app.seeds.run_all && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+     ```
+     Running the seeders before `uvicorn` on every boot is safe because they're idempotent — this keeps the catalog populated without a separate release step.
+   - Environment variables: `DATABASE_URL` (from step 1), `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_ACCESS_TOKEN_EXPIRE_MINUTES`, and `CORS_ORIGINS` (set once the frontend URL is known — step 3).
+3. **Frontend** — deploy as a **Static Site** as described in [frontend/README.md](frontend/README.md#deployment), pointing its `API_URL` build variable at this service's URL.
+4. Update `CORS_ORIGINS` on the backend with the frontend's final URL and redeploy.
+
+A ready-to-use [`render.yaml`](render.yaml) Blueprint is included to provision all three resources in one step (**New +** → **Blueprint** in the Render dashboard). Because the frontend and backend URLs reference each other, double-check `CORS_ORIGINS` and `API_URL` after the first deploy in case Render assigned different hostnames than the ones predicted in the file.
 
 ---
 

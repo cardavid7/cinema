@@ -4,7 +4,7 @@ from sqlmodel import Session
 from fastapi.security import OAuth2PasswordBearer
 
 from app.core.security import decode_access_token
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.core.db import get_session
 from app.repositories.user_repository import UserRepository
 
@@ -29,3 +29,10 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: DBSessio
     return user
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+def get_current_admin(user: CurrentUser) -> User:
+    if user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
+    return user
+
+AdminUser = Annotated[User, Depends(get_current_admin)]
