@@ -99,7 +99,7 @@ cinema/
 │   └── seeds/                       # Seed scripts for initial data
 │       └── run_all.py               # Runs every seeder in dependency order (idempotent)
 ├── frontend/                        # Angular SPA (see frontend/README.md)
-├── render.yaml                      # Render Blueprint: DB + backend + frontend in one deploy
+├── render.yaml                      # Render Blueprint: backend + frontend (DB lives on Neon)
 ├── .env.example                     # Environment variable template
 ├── .gitignore
 └── requirements.txt                 # Python dependencies
@@ -298,7 +298,9 @@ The project uses **SQLModel** (built on top of SQLAlchemy) as the ORM and suppor
 
 The database backend is automatically detected from the `DATABASE_URL` environment variable. SQLite requires no additional installation; PostgreSQL requires `psycopg` (included in `requirements.txt`).
 
-> **Note:** Managed providers (Render, Railway, Heroku, etc.) often hand out connection strings prefixed with `postgres://` or plain `postgresql://`. `app/core/db.py` normalizes both to `postgresql+psycopg://` automatically, so you can paste the provider's URL as-is into `DATABASE_URL`.
+> **Note:** Managed providers (Neon, Railway, Heroku, etc.) often hand out connection strings prefixed with `postgres://` or plain `postgresql://`. `app/core/db.py` normalizes both to `postgresql+psycopg://` automatically, so you can paste the provider's URL as-is into `DATABASE_URL`.
+>
+> For Neon, `db.py` also enforces `sslmode=require` and enables `pool_pre_ping`/`pool_recycle`, since Neon suspends idle computes and closes their connections.
 
 ### Seeding data
 
@@ -345,11 +347,11 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
 ## Deployment
 
-This repository is set up to deploy as **three independent services**: a PostgreSQL database, this FastAPI backend, and the [Angular frontend](frontend/README.md#deployment). It also serves a single-process mode where the backend serves the built Angular app for every non-API route — useful for smaller or all-in-one deployments — but the split setup below is recommended for Render's free tier, since static sites don't sleep while free web services do.
+This repository is set up to deploy as **three independent services**: a PostgreSQL database on [Neon](https://neon.tech), this FastAPI backend on Render, and the [Angular frontend](frontend/README.md#deployment). It also serves a single-process mode where the backend serves the built Angular app for every non-API route — useful for smaller or all-in-one deployments — but the split setup below is recommended for Render's free tier, since static sites don't sleep while free web services do.
 
-### Deploying to Render
+### Deploying (Neon + Render)
 
-1. **Database** — create a **PostgreSQL** instance (Free plan). Copy its *Internal Database URL*.
+1. **Database (Neon)** — create a project on [Neon](https://console.neon.tech) (Free plan). In **Connect**, copy the *pooled* connection string (host ends in `-pooler...neon.tech` and includes `?sslmode=require`). Tables are created on startup and the seeders populate them, so no manual migration is needed.
 2. **Backend** — create a **Web Service** from this repo:
    - Build command: `pip install -r requirements.txt`
    - Start command:
@@ -357,11 +359,11 @@ This repository is set up to deploy as **three independent services**: a Postgre
      python -m app.seeds.run_all && uvicorn app.main:app --host 0.0.0.0 --port $PORT
      ```
      Running the seeders before `uvicorn` on every boot is safe because they're idempotent — this keeps the catalog populated without a separate release step.
-   - Environment variables: `DATABASE_URL` (from step 1), `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_ACCESS_TOKEN_EXPIRE_MINUTES`, and `CORS_ORIGINS` (set once the frontend URL is known — step 3).
+   - Environment variables: `DATABASE_URL` (the Neon connection string from step 1), `JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_ACCESS_TOKEN_EXPIRE_MINUTES`, and `CORS_ORIGINS` (set once the frontend URL is known — step 3).
 3. **Frontend** — deploy as a **Static Site** as described in [frontend/README.md](frontend/README.md#deployment), pointing its `API_URL` build variable at this service's URL.
 4. Update `CORS_ORIGINS` on the backend with the frontend's final URL and redeploy.
 
-A ready-to-use [`render.yaml`](render.yaml) Blueprint is included to provision all three resources in one step (**New +** → **Blueprint** in the Render dashboard). Because the frontend and backend URLs reference each other, double-check `CORS_ORIGINS` and `API_URL` after the first deploy in case Render assigned different hostnames than the ones predicted in the file.
+A ready-to-use [`render.yaml`](render.yaml) Blueprint is included to provision the backend and frontend in one step (**New +** → **Blueprint** in the Render dashboard). `DATABASE_URL` is declared with `sync: false`, so Render will prompt for the Neon connection string during setup — it is never committed to the repo. Because the frontend and backend URLs reference each other, double-check `CORS_ORIGINS` and `API_URL` after the first deploy in case Render assigned different hostnames than the ones predicted in the file.
 
 ---
 
